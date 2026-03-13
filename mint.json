@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "VINE API",
+  "name": "Vine Research & Technology API",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
@@ -18,12 +18,12 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:dev@yourdomain.com"
+      "url": "mailto:trading.team@vine-rt.com"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://app.yourdomain.com"
+    "name": "Website",
+    "url": "https://www.vine-rt.com"
   },
   "tabs": [
     {
