@@ -10,45 +10,54 @@ VINE is built as an **event-driven, async-first** system with 11 modular layers.
 ## System Diagram
 
 ```mermaid
-flowchart LR
+flowchart TB
   GW["API Gateway<br/>FastAPI<br/><span style='font-size:12px'>/portfolio /subscription /risk /reports /onchain /webhook</span>"]
-  INV["Investor Services"]
-  WH["Signal Webhook Ingestion"]
-  EB["EventBus<br/>Redis Pub/Sub"]
 
-  AG["AI Agents<br/>News / Macro / Funding / Webhook"]
-  QM["Quant Models<br/>Factor(14) / GARCH / EVT-VaR / Sentiment"]
-  DC["Data Collectors<br/>Binance WS / CryptoPanic / FRED / Deribit"]
+  subgraph API["External Services"]
+    INV["Investor Services"]
+    WH["Signal Webhook Ingestion"]
+    EB["EventBus<br/>Redis Pub/Sub"]
+    INV <--> EB
+    WH <--> EB
+  end
 
-  SC["Signal Combiner"]
-  PB["Portfolio Builder"]
-  PMS["PMS"]
-  OMS["OMS"]
-  EMS["EMS"]
-  TCA["TCA"]
+  subgraph INPUTS["Signal & Data Inputs"]
+    AG["AI Agents<br/>News / Macro / Funding / Webhook"]
+    QM["Quant Models<br/>Factor(14) / GARCH / EVT-VaR / Sentiment"]
+    DC["Data Collectors<br/>Binance WS / CryptoPanic / FRED / Deribit"]
+  end
 
-  R1["L1 Agent Conviction"]
-  R2["L2 Supervisor / Factor Overlap"]
-  R3["L3 Hard Limits"]
-  R4["L4 Circuit Breaker / Kill All"]
+  subgraph PIPE["Trading Pipeline"]
+    SC["Signal Combiner"]
+    PB["Portfolio Builder"]
+    PMS["PMS"]
+    OMS["OMS"]
+    EMS["EMS"]
+    TCA["TCA"]
+    SC --> PB --> PMS --> OMS --> EMS --> TCA
+  end
 
-  PG["PostgreSQL / TimescaleDB"]
-  RC["Redis Cache"]
-  MON["Monitoring Stack<br/>Prometheus / Grafana / Telegram / Latency"]
+  subgraph RISK["4-Layer Risk Management"]
+    R1["L1 Agent Conviction"]
+    R2["L2 Supervisor / Factor Overlap"]
+    R3["L3 Hard Limits"]
+    R4["L4 Circuit Breaker / Kill All"]
+    R1 --> R2 --> R3 --> R4
+  end
+
+  subgraph STATE["State & Observability"]
+    PG["PostgreSQL / TimescaleDB"]
+    RC["Redis Cache"]
+    MON["Monitoring Stack<br/>Prometheus / Grafana / Telegram / Latency"]
+  end
 
   GW --> INV
   GW --> WH
-  INV <--> EB
-  WH <--> EB
-
+  EB --> SC
   AG --> SC
   QM --> SC
   DC --> SC
-  EB --> SC
-
-  SC --> PB --> PMS --> OMS --> EMS --> TCA
-  TCA --> R1 --> R2 --> R3 --> R4
-
+  TCA --> RISK
   INV --> PG
   WH --> PG
   DC --> PG
