@@ -1,0 +1,77 @@
+---
+title: "Strategy One Pager"
+description: "VINE AI-native BTC/ETH multi-strategy trading system overview"
+---
+
+# Strategy One Pager
+
+这份摘要基于内部策略单页材料整理，聚焦 **VINE 自营交易团队** 的投资理念、策略架构、组合构建方法与风控体系。
+
+## 投资理念
+
+VINE 以 **BTC + ETH** 为核心标的，融合三类低相关 Alpha：
+
+- **Macro Regime**: 基于利率、DXY、收益率曲线、VIX 与关键宏观日历事件识别市场环境
+- **News/Event Guard**: 使用 LLM 解析监管、黑客、ETF、宏观等事件并估计影响衰减周期
+- **Vol Agent**: 基于 IV-RV 均值回归、期限结构套利与波动率 Regime 识别进行波动率交易
+
+核心原则：
+
+- **单一标的、多维 Alpha**: 收益来源集中在 BTC/ETH，但通过因子归因避免伪分散
+- **AI-Native 决策**: AI Agent 直接参与新闻理解、事件分类与信号生成
+- **执行即 Alpha**: 将滑点、冲击成本与 TCA 结果纳入策略反馈闭环
+- **先控尾部风险，再追求收益**: 优先量化最坏情景与回撤路径
+
+## 策略架构
+
+| 模块 | 核心逻辑 |
+| --- | --- |
+| `News/Event Guard` | LLM 实时分析新闻情绪与事件类型，映射历史极端事件模板，按事件类型设置冲击衰减 |
+| `Macro Regime` | 综合 Fed 利率、DXY、收益率曲线、VIX 等信号，划分 `Risk-On` / `Transitional` / `Risk-Off` |
+| `Vol Agent` | 基于 Deribit tick 数据构建 IV Surface，识别 IV-RV 偏离与期限结构机会 |
+
+<Note>
+  `Vol Agent` 计划在 Phase 2 上线；Phase 1 先运行 `News + Macro` 双策略。后续策略权重会根据回测与实盘数据动态标定。
+</Note>
+
+## 信号合成
+
+多 Agent 信号先做 **conviction 加权** 与 **时间衰减**，再合成为目标仓位。后续会由 `Supervisor Agent` 在更高层做动态调权与冲突协调。
+
+```text
+target_position = f(agent_weight, conviction, direction, decay_factor, regime_overlay)
+```
+
+## 组合构建与执行
+
+### 仓位管理
+
+- **Fractional Kelly**: 用保守版 Kelly 控制增长与回撤的平衡
+- **Vol Targeting**: 动态调整仓位，使组合波动率靠近目标区间
+- **Risk Budgeting**: 按边际风险贡献分配风险预算，避免单策略主导组合
+
+### 执行管理
+
+- **三层分离**: `PMS -> OMS -> EMS`
+- **智能执行**: 支持 `TWAP / VWAP` 拆单与最优路由
+- **TCA 闭环**: 持续度量 `Implementation Shortfall` 与滑点，并将结果反馈给信号阈值与执行参数
+
+## 风险管理
+
+| 层级 | 内容 |
+| --- | --- |
+| `L1 - Agent 级` | 单笔止损、单日亏损上限、低 conviction 过滤、Vol Target 约束 |
+| `L2 - Supervisor 级` | 因子重叠度监控、EVT 尾部预警、阶梯回撤协议、跨策略相关性监控 |
+| `L3 - 硬性限制` | 最大杠杆、单交易所敞口、保证金使用率、日交易笔数等不可覆盖限制 |
+| `L4 - 熔断` | 极端回撤全仓平仓、API 异常自动关停、人工审批后恢复 |
+
+## 当前产品定位
+
+VINE 文档站目前覆盖的是这套多策略交易系统的开发者接口与集成说明，后续会继续把：
+
+- 更完整的策略模块说明
+- 组合归因与风险预算细节
+- Phase 2 / Phase 3 规划
+- 执行与 TCA 指标定义
+
+逐步补充进文档站。
