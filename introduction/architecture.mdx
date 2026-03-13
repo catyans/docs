@@ -9,51 +9,54 @@ VINE is built as an **event-driven, async-first** system with 11 modular layers.
 
 ## System Diagram
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                        API Gateway (FastAPI)                      │
-│   /portfolio  /subscription  /risk  /reports  /onchain  /webhook │
-└──────┬───────────────────────────────────────────────┬───────────┘
-       │                                               │
-       ▼                                               ▼
-┌──────────────┐  EventBus (Redis Pub/Sub)  ┌──────────────────────┐
-│  Investor    │◄──────────────────────────►│  Signal Webhook      │
-│  Services    │                            │  Ingestion           │
-└──────┬───────┘                            └──────────────────────┘
-       │                                               │
-       ▼                                               ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                      Trading Engine Core                         │
-│                                                                  │
-│  ┌─────────────┐    ┌──────────────┐    ┌─────────────────────┐ │
-│  │ AI Agents   │    │  Quant       │    │  Data Collectors    │ │
-│  │             │    │  Models      │    │                     │ │
-│  │ • News/LLM  │    │ • Factor(14) │    │ • Binance WebSocket │ │
-│  │ • Macro     │    │ • GARCH      │    │ • CryptoPanic News  │ │
-│  │ • Funding   │    │ • EVT/VaR    │    │ • FRED Macro        │ │
-│  │ • Webhook   │    │ • Sentiment  │    │ • Deribit Options   │ │
-│  └──────┬──────┘    └──────┬───────┘    └─────────┬───────────┘ │
-│         │                  │                      │             │
-│         ▼                  ▼                      ▼             │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │                  Trading Pipeline                         │  │
-│  │  Signal Combiner → Portfolio Builder → PMS → OMS → EMS   │  │
-│  └───────────────────────────┬───────────────────────────────┘  │
-│                              │                                  │
-│  ┌───────────────────────────▼───────────────────────────────┐  │
-│  │              4-Layer Risk Management                       │  │
-│  │  L1: Agent Conviction  →  L2: Supervisor (Factor Overlap) │  │
-│  │  L3: Hard Limits       →  L4: Circuit Breaker (Kill All)  │  │
-│  └───────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────────┘
-       │                                               │
-       ▼                                               ▼
-┌──────────────┐                            ┌──────────────────────┐
-│ PostgreSQL   │                            │  Monitoring Stack    │
-│ (TimescaleDB)│                            │  Prometheus/Grafana  │
-│              │                            │  Telegram Alerts     │
-│ Redis Cache  │                            │  Latency Tracker     │
-└──────────────┘                            └──────────────────────┘
+```mermaid
+flowchart LR
+  GW["API Gateway<br/>FastAPI<br/><span style='font-size:12px'>/portfolio /subscription /risk /reports /onchain /webhook</span>"]
+  INV["Investor Services"]
+  WH["Signal Webhook Ingestion"]
+  EB["EventBus<br/>Redis Pub/Sub"]
+
+  AG["AI Agents<br/>News / Macro / Funding / Webhook"]
+  QM["Quant Models<br/>Factor(14) / GARCH / EVT-VaR / Sentiment"]
+  DC["Data Collectors<br/>Binance WS / CryptoPanic / FRED / Deribit"]
+
+  SC["Signal Combiner"]
+  PB["Portfolio Builder"]
+  PMS["PMS"]
+  OMS["OMS"]
+  EMS["EMS"]
+  TCA["TCA"]
+
+  R1["L1 Agent Conviction"]
+  R2["L2 Supervisor / Factor Overlap"]
+  R3["L3 Hard Limits"]
+  R4["L4 Circuit Breaker / Kill All"]
+
+  PG["PostgreSQL / TimescaleDB"]
+  RC["Redis Cache"]
+  MON["Monitoring Stack<br/>Prometheus / Grafana / Telegram / Latency"]
+
+  GW --> INV
+  GW --> WH
+  INV <--> EB
+  WH <--> EB
+
+  AG --> SC
+  QM --> SC
+  DC --> SC
+  EB --> SC
+
+  SC --> PB --> PMS --> OMS --> EMS --> TCA
+  TCA --> R1 --> R2 --> R3 --> R4
+
+  INV --> PG
+  WH --> PG
+  DC --> PG
+  PMS --> PG
+  PMS --> RC
+  OMS --> MON
+  EMS --> MON
+  R4 --> MON
 ```
 
 ## Module Overview
