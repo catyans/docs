@@ -34,7 +34,7 @@ HMAC-SHA256 signature via `X-Signature` header.
 
 In TradingView, create an alert with:
 
-- **Webhook URL**: `https://api.poacapital.io/v1/webhook/tradingview`
+- **Webhook URL**: `https://api.yourdomain.com/v1/webhook/tradingview`
 - **Message format**:
 
 ```json
@@ -49,7 +49,7 @@ In TradingView, create an alert with:
 ## Request
 
 ```bash
-curl -X POST https://api.poacapital.io/v1/webhook/tradingview \
+curl -X POST https://api.yourdomain.com/v1/webhook/tradingview \
   -H "Content-Type: application/json" \
   -H "X-Signature: a1b2c3d4e5f6..." \
   -d '{

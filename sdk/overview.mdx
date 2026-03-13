@@ -1,18 +1,18 @@
 ---
 title: "SDK Overview"
-description: "Official Python and TypeScript SDKs for the PoA Capital API"
+description: "Official Python and TypeScript SDKs for the VINE API"
 ---
 
 # SDK Overview
 
-PoA Capital provides official SDKs for **Python** and **TypeScript** to simplify API integration.
+VINE provides official SDKs for **Python** and **TypeScript** to simplify API integration.
 
 <CardGroup cols={2}>
   <Card title="Python SDK" icon="python" href="/sdk/python">
-    `pip install poacapital`
+    `pip install vine-sdk`
   </Card>
   <Card title="TypeScript SDK" icon="js" href="/sdk/typescript">
-    `npm install @poacapital/sdk`
+    `npm install @vine/sdk`
   </Card>
 </CardGroup>
 
@@ -32,9 +32,9 @@ PoA Capital provides official SDKs for **Python** and **TypeScript** to simplify
 ## Quick Example
 
 ```python
-from poacapital import PoAClient
+from vine import VINEClient
 
-client = PoAClient(api_key="pk_live_...", api_secret="sk_live_...")
+client = VINEClient(api_key="pk_live_...", api_secret="sk_live_...")
 
 # Portfolio
 portfolio = client.get_portfolio()

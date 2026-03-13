@@ -1,6 +1,6 @@
 ---
 title: "Python SDK"
-description: "Official Python SDK for PoA Capital API"
+description: "Official Python SDK for VINE API"
 ---
 
 # Python SDK
@@ -8,23 +8,23 @@ description: "Official Python SDK for PoA Capital API"
 ## Installation
 
 ```bash
-pip install poacapital
+pip install vine-sdk
 ```
 
 ## Initialization
 
 ```python
-from poacapital import PoAClient
+from vine import VINEClient
 
 # API Key authentication (server-to-server)
-client = PoAClient(
+client = VINEClient(
     api_key="pk_live_abc123",
     api_secret="sk_live_xyz789",
-    base_url="https://api.poacapital.io/v1"  # optional, defaults to production
+    base_url="https://api.yourdomain.com/v1"  # optional, defaults to production
 )
 
 # JWT authentication (investor portal)
-client = PoAClient.from_credentials(
+client = VINEClient.from_credentials(
     email="investor@example.com",
     password="your_password"
 )
@@ -120,7 +120,7 @@ print(f"Signal accepted: {result.signal_id}")
 ## Error Handling
 
 ```python
-from poacapital.exceptions import (
+from vine.exceptions import (
     AuthError,
     RateLimitError,
     InsufficientBalanceError,
@@ -140,10 +140,10 @@ except AuthError as e:
 ## Async Support
 
 ```python
-from poacapital import AsyncPoAClient
+from vine import AsyncVINEClient
 
 async def main():
-    client = AsyncPoAClient(api_key="...", api_secret="...")
+    client = AsyncVINEClient(api_key="...", api_secret="...")
 
     portfolio = await client.get_portfolio()
     risk = await client.get_risk()

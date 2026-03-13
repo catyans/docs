@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "PoA Capital API",
+  "name": "VINE API",
   "colors": {
     "primary": "#F7931A",
     "light": "#FFB84D",
@@ -115,12 +115,12 @@
       "anchors": [
         {
           "anchor": "GitHub",
-          "href": "https://github.com/poacapital",
+          "href": "https://github.com/catyans/docs",
           "icon": "github"
         },
         {
           "anchor": "Status",
-          "href": "https://status.poacapital.io",
+          "href": "https://status.yourdomain.com",
           "icon": "signal"
         }
       ]
@@ -132,7 +132,7 @@
   },
   "api": {
     "mdx": {
-      "server": "https://api.poacapital.io/v1",
+      "server": "https://api.yourdomain.com/v1",
       "auth": {
         "method": "bearer"
       }
@@ -142,19 +142,19 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:dev@poacapital.io"
+        "href": "mailto:dev@yourdomain.com"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://app.poacapital.io"
+      "href": "https://app.yourdomain.com"
     }
   },
   "footer": {
     "socials": {
-      "twitter": "https://twitter.com/poacapital",
-      "github": "https://github.com/poacapital"
+      "twitter": "https://x.com/yourcompany",
+      "github": "https://github.com/catyans/docs"
     }
   }
 }

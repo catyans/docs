@@ -1,6 +1,6 @@
 ---
 title: "TypeScript SDK"
-description: "Official TypeScript/JavaScript SDK for PoA Capital API"
+description: "Official TypeScript/JavaScript SDK for VINE API"
 ---
 
 # TypeScript SDK
@@ -8,24 +8,24 @@ description: "Official TypeScript/JavaScript SDK for PoA Capital API"
 ## Installation
 
 ```bash
-npm install @poacapital/sdk
+npm install @vine/sdk
 # or
-yarn add @poacapital/sdk
+yarn add @vine/sdk
 ```
 
 ## Initialization
 
 ```typescript
-import { PoAClient } from '@poacapital/sdk';
+import { VINEClient } from '@vine/sdk';
 
 // API Key auth
-const client = new PoAClient({
+const client = new VINEClient({
   apiKey: 'pk_live_abc123',
   apiSecret: 'sk_live_xyz789',
 });
 
 // JWT auth
-const client = await PoAClient.fromCredentials({
+const client = await VINEClient.fromCredentials({
   email: 'investor@example.com',
   password: 'your_password',
 });
@@ -81,7 +81,7 @@ const red = await client.redeem({
 ## Error Handling
 
 ```typescript
-import { PoAError, RateLimitError, InsufficientBalanceError } from '@poacapital/sdk';
+import { VINEError, RateLimitError, InsufficientBalanceError } from '@vine/sdk';
 
 try {
   await client.redeem({ shares: 9999, destinationWallet: '0x...' });

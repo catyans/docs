@@ -1,20 +1,20 @@
 ---
 title: "Quick Start"
-description: "Get up and running with the PoA Capital API in 5 minutes"
+description: "Get up and running with the VINE API in 5 minutes"
 ---
 
 # Quick Start
 
-This guide walks you through making your first API call to PoA Capital.
+This guide walks you through making your first API call to VINE.
 
 ## Prerequisites
 
-- An active PoA Capital investor account
+- An active VINE investor account
 - API credentials (API Key or JWT token)
 
 ## Step 1: Get Your API Key
 
-Navigate to [Dashboard → Settings → API Keys](https://app.poacapital.io/settings/api-keys) to generate your credentials.
+Navigate to [Dashboard → Settings → API Keys](https://app.yourdomain.com/settings/api-keys) to generate your credentials.
 
 <Note>
   Store your API secret securely. It is only shown once during creation.
@@ -24,7 +24,7 @@ Navigate to [Dashboard → Settings → API Keys](https://app.poacapital.io/sett
 
 ```bash
 # Get a JWT token
-curl -X POST https://api.poacapital.io/v1/auth/login \
+curl -X POST https://api.yourdomain.com/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "your@email.com",
@@ -46,7 +46,7 @@ Response:
 ## Step 3: Query Your Portfolio
 
 ```bash
-curl https://api.poacapital.io/v1/portfolio \
+curl https://api.yourdomain.com/v1/portfolio \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
 ```
 
@@ -74,7 +74,7 @@ Response:
 ## Step 4: Check Risk Status
 
 ```bash
-curl https://api.poacapital.io/v1/risk \
+curl https://api.yourdomain.com/v1/risk \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
 ```
 
@@ -93,9 +93,9 @@ Response:
 ## Using the Python SDK
 
 ```python
-from poacapital import PoAClient
+from vine import VINEClient
 
-client = PoAClient(
+client = VINEClient(
     api_key="your_api_key",
     api_secret="your_api_secret"
 )

@@ -46,7 +46,7 @@ signature = hmac.new(
 ).hexdigest()
 
 resp = requests.post(
-    "https://api.poacapital.io/v1/webhook/signal",
+    "https://api.yourdomain.com/v1/webhook/signal",
     headers={
         "Content-Type": "application/json",
         "X-Signature": signature,
@@ -82,7 +82,7 @@ BODY='{"source":"test","direction":"long","conviction":0.5,"half_life_h":24,"hor
 SIG=$(echo -n "$BODY" | openssl dgst -sha256 -hmac "$SECRET" | awk '{print $2}')
 
 # Send webhook
-curl -X POST https://api.poacapital.io/v1/webhook/signal \
+curl -X POST https://api.yourdomain.com/v1/webhook/signal \
   -H "Content-Type: application/json" \
   -H "X-Signature: $SIG" \
   -d "$BODY"
