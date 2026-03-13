@@ -1,0 +1,98 @@
+---
+title: "JWT Tokens"
+description: "Bearer token authentication for investor portal and dashboard access"
+---
+
+# JWT Authentication
+
+JWT (JSON Web Token) authentication is used for **investor portal** access — web dashboards, mobile apps, and interactive sessions.
+
+## Obtain a Token
+
+<ParamField body="email" type="string" required>
+  Registered investor email address
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Account password
+</ParamField>
+
+```bash
+POST /v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "investor@example.com",
+  "password": "********"
+}
+```
+
+### Response
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "expires_in": 86400,
+  "role": "investor"
+}
+```
+
+## Using the Token
+
+Include the token in the `Authorization` header for all subsequent requests:
+
+```bash
+curl https://api.poacapital.io/v1/portfolio \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Token Refresh
+
+Access tokens expire after **24 hours**. Use the refresh token to obtain a new access token without re-authenticating:
+
+```bash
+POST /v1/auth/refresh
+
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIs...(new)",
+  "expires_in": 86400
+}
+```
+
+<Note>
+  Refresh tokens are valid for 30 days. After expiry, the user must log in again.
+</Note>
+
+## Roles & Permissions
+
+| Role | Description | Endpoints |
+| --- | --- | --- |
+| `investor` | Fund investor | Own portfolio, NAV, subscribe/redeem, reports |
+| `viewer` | Read-only access | All portfolio/risk/performance data (no mutations) |
+| `pm` | Portfolio Manager | Full access including circuit breaker reset, recovery approval |
+
+## Token Payload Structure
+
+```json
+{
+  "sub": "user_abc123",
+  "role": "investor",
+  "iat": 1709942400,
+  "exp": 1710028800
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `sub` | string | User identifier |
+| `role` | string | Permission role |
+| `iat` | number | Issued at (Unix timestamp) |
+| `exp` | number | Expiry (Unix timestamp) |

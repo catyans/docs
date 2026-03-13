@@ -1,0 +1,48 @@
+---
+title: "Get Proof"
+api: "GET /v1/onchain/proof/{tx_hash}"
+description: "Verify on-chain proof of a specific transaction"
+---
+
+# Get On-Chain Proof
+
+Retrieve verifiable on-chain proof for a specific transaction. Used for audit and compliance verification.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor` role.
+</ParamField>
+
+## Path Parameters
+
+<ParamField path="tx_hash" type="string" required>
+  Transaction hash (0x-prefixed hex string)
+</ParamField>
+
+## Request
+
+```bash
+curl https://api.poacapital.io/v1/onchain/proof/0xabc123def456... \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response Example
+
+```json
+{
+  "tx_hash": "0xabc123def456789012345678901234567890abcdef1234567890123456789abcde",
+  "block_number": 19234567,
+  "block_hash": "0xblock_hash_here...",
+  "block_timestamp": "2026-03-09T15:05:00Z",
+  "contract_address": "0xPoAFundContract...",
+  "method": "subscribe",
+  "from": "0xInvestorWallet...",
+  "to": "0xPoAFundContract...",
+  "value_usdt": 50000.00,
+  "shares_minted": 237.69,
+  "gas_used": 85000,
+  "verified": true,
+  "explorer_url": "https://etherscan.io/tx/0xabc123def456..."
+}
+```

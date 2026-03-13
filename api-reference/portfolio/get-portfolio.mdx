@@ -1,0 +1,90 @@
+---
+title: "Get Portfolio"
+api: "GET /v1/portfolio"
+description: "Returns current portfolio holdings, NAV, and unrealized P&L"
+---
+
+# Get Portfolio
+
+Retrieve the current state of the fund's portfolio including net asset value, cash balance, leverage, positions, and unrealized profit/loss.
+
+<Note>
+  NAV is updated in real-time based on the latest market prices. Positions reflect the latest execution state.
+</Note>
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor`, `viewer`, or `pm` role.
+</ParamField>
+
+## Response
+
+<ResponseField name="nav" type="number">
+  Net Asset Value in USDT
+</ResponseField>
+
+<ResponseField name="cash" type="number">
+  Available cash balance in USDT
+</ResponseField>
+
+<ResponseField name="leverage" type="number">
+  Current portfolio leverage (notional / NAV)
+</ResponseField>
+
+<ResponseField name="drawdown" type="number">
+  Current drawdown from high-water mark (negative value)
+</ResponseField>
+
+<ResponseField name="high_water_mark" type="number">
+  Highest NAV achieved
+</ResponseField>
+
+<ResponseField name="positions" type="object">
+  Map of symbol → position details
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+  ISO 8601 timestamp of last update
+</ResponseField>
+
+## Request
+
+```bash
+curl https://api.poacapital.io/v1/portfolio \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response Example
+
+```json
+{
+  "nav": 210350.50,
+  "cash": 45200.00,
+  "leverage": 1.2500,
+  "drawdown": -0.0234,
+  "high_water_mark": 215000.00,
+  "positions": {
+    "BTC/USDT": {
+      "size": 2.35,
+      "avg_entry_price": 67500.00,
+      "mark_price": 68200.00,
+      "unrealized_pnl": 1645.00,
+      "direction": "long",
+      "weight_pct": 76.3
+    }
+  },
+  "updated_at": "2026-03-09T12:00:00Z"
+}
+```
+
+## Position Fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `size` | number | Position size in base asset (e.g., BTC) |
+| `avg_entry_price` | number | Volume-weighted average entry price |
+| `mark_price` | number | Current market mid-price |
+| `unrealized_pnl` | number | Unrealized profit/loss in USDT |
+| `direction` | string | `"long"`, `"short"`, or `"flat"` |
+| `weight_pct` | number | Position weight as % of NAV |

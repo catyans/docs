@@ -1,0 +1,79 @@
+---
+title: "Signal Webhook"
+api: "POST /v1/webhook/signal"
+description: "Ingest external trading signals into the system"
+---
+
+# Signal Webhook
+
+Ingest custom trading signals from external sources. Signals are processed through the same pipeline as internal AI agent signals — combined, risk-checked, and executed.
+
+## Authentication
+
+HMAC-SHA256 signature via `X-Signature` header. See [Webhook HMAC](/authentication/webhooks-hmac).
+
+## Request Body
+
+<ParamField body="source" type="string" required>
+  Signal source identifier (e.g., `"custom_model"`, `"quant_desk"`)
+</ParamField>
+
+<ParamField body="direction" type="string" required>
+  Trade direction: `"long"`, `"short"`, `"flat"`, `"buy"`, `"sell"`
+</ParamField>
+
+<ParamField body="conviction" type="number" default="0.5">
+  Signal strength from 0.0 to 1.0
+</ParamField>
+
+<ParamField body="half_life_h" type="number" default="24.0">
+  Signal decay half-life in hours
+</ParamField>
+
+<ParamField body="horizon" type="string" default="daily">
+  Time horizon: `"intraday"`, `"daily"`, `"weekly"`
+</ParamField>
+
+<ParamField body="message" type="string">
+  Optional description or reasoning
+</ParamField>
+
+## Request
+
+```bash
+curl -X POST https://api.poacapital.io/v1/webhook/signal \
+  -H "Content-Type: application/json" \
+  -H "X-Signature: a1b2c3d4e5f6..." \
+  -d '{
+    "source": "custom_model",
+    "direction": "long",
+    "conviction": 0.75,
+    "half_life_h": 24.0,
+    "horizon": "daily",
+    "message": "Breakout signal on 4h chart"
+  }'
+```
+
+## Response Example
+
+```json
+{
+  "status": "accepted",
+  "signal_id": "sig_a1b2c3d4",
+  "direction": "long",
+  "conviction": 0.75
+}
+```
+
+## Signal Decay
+
+Signals decay exponentially: `effective_conviction = conviction × 0.5^(elapsed_h / half_life_h)`
+
+A signal expires after **3 half-lives** (conviction drops below ~12.5% of original).
+
+| half_life_h | Effective Duration |
+| --- | --- |
+| 8 | ~24 hours |
+| 24 | ~3 days |
+| 48 | ~6 days |
+| 168 | ~21 days |

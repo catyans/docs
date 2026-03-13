@@ -1,0 +1,36 @@
+---
+title: "Changelog"
+description: "API version history and breaking changes"
+---
+
+# Changelog
+
+## v1.0.0 — 2026-03-09 (Current)
+
+Initial public release of the PoA Capital API.
+
+### Endpoints
+- **Portfolio**: `GET /portfolio`, `GET /portfolio/history`, `GET /performance`
+- **Subscription**: `POST /subscribe`, `POST /redeem`, `GET /status/{id}`
+- **Risk**: `GET /risk`, `GET /stress`, `GET /alerts`, `POST /circuit-breaker/reset`
+- **On-Chain**: `GET /onchain/transactions`, `GET /onchain/proof/{tx_hash}`
+- **Reports**: `GET /reports/list`, `GET /reports/download/{id}`
+- **Webhooks**: `POST /webhook/signal`, `POST /webhook/tradingview`
+- **System**: `GET /health`
+
+### Authentication
+- JWT Bearer tokens for investor portal
+- API Key + HMAC-SHA256 for server-to-server
+- Role-based access: `investor`, `viewer`, `pm`
+
+### SDKs
+- Python SDK: `poacapital` v1.0.0
+- TypeScript SDK: `@poacapital/sdk` v1.0.0
+
+---
+
+## Deprecation Policy
+
+- **90-day notice** before removing any endpoint
+- Deprecated endpoints return `Deprecation` header with sunset date
+- Breaking changes increment the API version (`/v2/`)

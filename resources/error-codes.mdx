@@ -1,0 +1,79 @@
+---
+title: "Error Codes"
+description: "Complete reference of HTTP status codes and business error codes"
+---
+
+# Error Codes
+
+All errors follow a consistent JSON format:
+
+```json
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable description",
+    "details": {},
+    "request_id": "req_abc123",
+    "timestamp": "2026-03-09T12:00:00Z"
+  }
+}
+```
+
+## HTTP Status Codes
+
+| Code | Meaning | When |
+| --- | --- | --- |
+| `200` | OK | Successful GET/POST |
+| `201` | Created | Resource created (subscription) |
+| `202` | Accepted | Request accepted, processing async |
+| `400` | Bad Request | Invalid JSON, missing required fields |
+| `401` | Unauthorized | Invalid/expired token or signature |
+| `403` | Forbidden | Insufficient role permissions |
+| `404` | Not Found | Resource does not exist |
+| `409` | Conflict | Duplicate operation |
+| `422` | Unprocessable Entity | Valid request but business rule violation |
+| `429` | Too Many Requests | Rate limit exceeded |
+| `500` | Internal Server Error | Unexpected server failure |
+| `503` | Service Unavailable | Component down or circuit breaker active |
+
+## Authentication Errors
+
+| Code | HTTP | Description | Resolution |
+| --- | --- | --- | --- |
+| `AUTH_TOKEN_EXPIRED` | 401 | JWT token has expired | Refresh token or re-login |
+| `AUTH_TOKEN_INVALID` | 401 | Malformed or tampered token | Generate new token |
+| `AUTH_INVALID_SIGNATURE` | 401 | HMAC signature mismatch | Check signing algorithm and secret |
+| `AUTH_TIMESTAMP_EXPIRED` | 401 | Request timestamp >30s old | Sync server clock |
+| `AUTH_ROLE_REQUIRED` | 403 | Endpoint requires higher role | Request role upgrade |
+| `AUTH_KYC_REQUIRED` | 403 | KYC not approved | Complete KYC verification |
+
+## Subscription Errors
+
+| Code | HTTP | Description | Resolution |
+| --- | --- | --- | --- |
+| `SUB_MIN_AMOUNT` | 422 | Below $10,000 minimum | Increase amount |
+| `SUB_DUPLICATE` | 409 | Active subscription pending | Wait for current to settle |
+| `SUB_LOCK_PERIOD` | 422 | Shares still locked | Wait until lock_until date |
+| `SUB_PAYMENT_TIMEOUT` | 422 | Payment not received by deadline | Re-submit subscription |
+| `SUB_AML_REJECTED` | 403 | AML/KYC check failed | Contact compliance |
+| `INSUFFICIENT_BALANCE` | 422 | Not enough shares to redeem | Reduce redemption amount |
+| `REDEEM_MAX_EXCEEDED` | 422 | Exceeds 25% of fund NAV | Split into smaller requests |
+| `REDEEM_EXPRESS_LIMIT` | 422 | Express redeem >$10k | Use standard redemption |
+
+## Risk Errors
+
+| Code | HTTP | Description | Resolution |
+| --- | --- | --- | --- |
+| `RISK_CIRCUIT_BREAKER` | 503 | Circuit breaker active | Wait for PM reset |
+| `RISK_DRAWDOWN_LIMIT` | 503 | Drawdown Level 3 active | PM must approve recovery |
+| `RISK_ORDER_REJECTED` | 422 | Order failed pre-trade checks | Check leverage/size limits |
+
+## System Errors
+
+| Code | HTTP | Description | Resolution |
+| --- | --- | --- | --- |
+| `SYSTEM_NOT_READY` | 503 | Component initializing | Retry after 30s |
+| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests | Wait for `retry_after` seconds |
+| `REPORT_NOT_FOUND` | 404 | Report ID invalid | Check /reports/list |
+| `REPORT_GENERATING` | 202 | Report still being generated | Retry in 60s |
+| `TX_NOT_FOUND` | 404 | Transaction hash not found | Verify tx_hash |

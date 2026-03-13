@@ -1,0 +1,70 @@
+---
+title: "Overview"
+description: "AI-native BTC multi-strategy trading infrastructure with institutional-grade risk management"
+---
+
+# Welcome to PoA Capital API
+
+PoA Capital provides an **AI-native BTC multi-strategy trading system** that combines Claude LLM agents with quantitative models, delivering institutional-grade portfolio management through a simple REST API.
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="bolt" href="/introduction/quickstart">
+    Get up and running in 5 minutes
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/overview">
+    Explore all endpoints
+  </Card>
+  <Card title="Architecture" icon="diagram-project" href="/introduction/architecture">
+    Understand how it works
+  </Card>
+  <Card title="SDK" icon="cube" href="/sdk/overview">
+    Python & TypeScript SDKs
+  </Card>
+</CardGroup>
+
+## What is PoA Capital?
+
+PoA Capital is a **self-trading (proprietary) BTC fund** that uses AI agents to generate trading signals, combined with rigorous quantitative risk management. The platform exposes a comprehensive API for:
+
+- **Investors** — Subscribe, monitor NAV, view on-chain records, download reports
+- **Integrators** — Feed external signals via webhooks, build custom dashboards
+- **Auditors** — Verify on-chain transactions, access stress test results
+
+## Key Features
+
+| Capability | Details |
+| --- | --- |
+| **AI Signal Generation** | Claude LLM agents analyze news, macro data, and market microstructure in real-time |
+| **Multi-Strategy** | News event, macro regime, funding rate, and webhook signals combined via decay-weighted ensemble |
+| **4-Layer Risk Management** | Agent → Supervisor → Hard Limits → Circuit Breaker hierarchical protection |
+| **On-Chain Transparency** | All subscriptions and redemptions recorded on-chain with verifiable proofs |
+| **Real-Time Monitoring** | Live NAV, drawdown, leverage, and risk metrics via API |
+| **Institutional Reports** | Daily, weekly, monthly PDF reports with full TCA analysis |
+
+## How It Works
+
+<Steps>
+  <Step title="Signal Generation">
+    AI agents (news analysis, macro regime, funding rate) generate directional signals with conviction scores and decay half-lives.
+  </Step>
+  <Step title="Signal Combination">
+    Signals are combined via weighted ensemble: `w = Σ(α_agent × conviction × direction × decay_factor)`
+  </Step>
+  <Step title="Portfolio Construction">
+    Volatility targeting, regime overlay, and leverage constraints produce a target BTC position.
+  </Step>
+  <Step title="Execution & Risk">
+    Orders pass through 4-layer risk checks before execution. TCA monitors slippage and implementation shortfall.
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Architecture Deep Dive" icon="sitemap" href="/introduction/architecture">
+    Learn about the system's 11-module architecture
+  </Card>
+  <Card title="Get API Keys" icon="key" href="/authentication/api-keys">
+    Set up authentication to start making requests
+  </Card>
+</CardGroup>

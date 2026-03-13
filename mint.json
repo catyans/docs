@@ -1,0 +1,147 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "PoA Capital API",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#F7931A",
+    "light": "#FFB84D",
+    "dark": "#E8820A",
+    "anchors": {
+      "from": "#F7931A",
+      "to": "#E8820A"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:dev@poacapital.io"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://app.poacapital.io"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "SDK",
+      "url": "sdk"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/poacapital"
+    },
+    {
+      "name": "Status",
+      "icon": "signal",
+      "url": "https://status.poacapital.io"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction/overview",
+        "introduction/architecture",
+        "introduction/quickstart"
+      ]
+    },
+    {
+      "group": "Authentication",
+      "pages": [
+        "authentication/api-keys",
+        "authentication/jwt-tokens",
+        "authentication/webhooks-hmac"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/overview"
+      ]
+    },
+    {
+      "group": "Portfolio",
+      "pages": [
+        "api-reference/portfolio/get-portfolio",
+        "api-reference/portfolio/get-history",
+        "api-reference/portfolio/get-performance"
+      ]
+    },
+    {
+      "group": "Subscription",
+      "pages": [
+        "api-reference/subscription/overview",
+        "api-reference/subscription/subscribe",
+        "api-reference/subscription/redeem",
+        "api-reference/subscription/get-status"
+      ]
+    },
+    {
+      "group": "Risk & Monitoring",
+      "pages": [
+        "api-reference/risk/get-risk-status",
+        "api-reference/risk/get-stress-test",
+        "api-reference/risk/get-alerts",
+        "api-reference/risk/reset-circuit-breaker"
+      ]
+    },
+    {
+      "group": "On-Chain",
+      "pages": [
+        "api-reference/onchain/get-transactions",
+        "api-reference/onchain/get-proof"
+      ]
+    },
+    {
+      "group": "Reports",
+      "pages": [
+        "api-reference/reports/list-reports",
+        "api-reference/reports/download-report"
+      ]
+    },
+    {
+      "group": "Webhooks",
+      "pages": [
+        "api-reference/webhooks/signal",
+        "api-reference/webhooks/tradingview"
+      ]
+    },
+    {
+      "group": "SDK",
+      "pages": [
+        "sdk/overview",
+        "sdk/python",
+        "sdk/typescript"
+      ]
+    },
+    {
+      "group": "Resources",
+      "pages": [
+        "resources/error-codes",
+        "resources/rate-limits",
+        "resources/changelog"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/poacapital",
+    "github": "https://github.com/poacapital"
+  },
+  "api": {
+    "baseUrl": "https://api.poacapital.io/v1",
+    "auth": {
+      "method": "bearer"
+    }
+  }
+}

@@ -1,0 +1,77 @@
+---
+title: "Subscription Overview"
+description: "How the subscription and redemption lifecycle works"
+---
+
+# Subscription & Redemption
+
+The subscription system handles the full lifecycle of investor capital flows — from initial subscription to on-chain settlement.
+
+## Lifecycle Flow
+
+```
+Subscribe                     Redeem
+────────                     ──────
+POST /subscribe              POST /redeem
+     │                            │
+     ▼                            ▼
+pending_payment              pending_review
+     │                            │
+     ▼  (USDT detected)          ▼  (PM approval)
+payment_received             approved
+     │                            │
+     ▼  (AML/KYC check)          ▼  (T+7 settlement)
+confirmed                    processing
+     │                            │
+     ▼  (Smart contract)         ▼  (USDT sent)
+on_chain                     settled
+     │                            │
+     ▼                            ▼
+active                       completed
+```
+
+## Key Concepts
+
+### Share-Based Accounting
+
+Subscriptions are converted to **fund shares** at the current NAV:
+
+```
+shares = subscription_amount / nav_per_share
+```
+
+Redemptions convert shares back to USDT at the NAV on settlement date.
+
+### Lock Period
+
+Subscriptions may include a lock period (e.g., 90 days) during which redemption is not permitted. Early redemption requests during the lock period will be rejected with error code `SUB_LOCK_PERIOD`.
+
+### Settlement
+
+| Type | Settlement Time | Description |
+| --- | --- | --- |
+| Subscription | T+0 to T+1 | After payment confirmation and AML check |
+| Redemption (Standard) | T+7 | 7 calendar days from request |
+| Redemption (Express) | T+1 | Available for amounts < $10,000 (subject to liquidity) |
+
+### Minimum Amounts
+
+| Parameter | Value |
+| --- | --- |
+| Minimum subscription | $10,000 USDT |
+| Minimum redemption | $1,000 USDT or 1 share |
+| Maximum single redemption | 25% of fund NAV |
+
+## Endpoints
+
+<CardGroup cols={3}>
+  <Card title="Subscribe" icon="circle-plus" href="/api-reference/subscription/subscribe">
+    Submit a new subscription
+  </Card>
+  <Card title="Redeem" icon="circle-minus" href="/api-reference/subscription/redeem">
+    Request a redemption
+  </Card>
+  <Card title="Track Status" icon="magnifying-glass" href="/api-reference/subscription/get-status">
+    Check subscription/redemption progress
+  </Card>
+</CardGroup>

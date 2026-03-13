@@ -1,0 +1,152 @@
+---
+title: "Python SDK"
+description: "Official Python SDK for PoA Capital API"
+---
+
+# Python SDK
+
+## Installation
+
+```bash
+pip install poacapital
+```
+
+## Initialization
+
+```python
+from poacapital import PoAClient
+
+# API Key authentication (server-to-server)
+client = PoAClient(
+    api_key="pk_live_abc123",
+    api_secret="sk_live_xyz789",
+    base_url="https://api.poacapital.io/v1"  # optional, defaults to production
+)
+
+# JWT authentication (investor portal)
+client = PoAClient.from_credentials(
+    email="investor@example.com",
+    password="your_password"
+)
+```
+
+## Portfolio
+
+```python
+# Current portfolio
+portfolio = client.get_portfolio()
+print(f"NAV: ${portfolio.nav:,.2f}")
+print(f"Leverage: {portfolio.leverage:.2f}x")
+print(f"Drawdown: {portfolio.drawdown:.2%}")
+
+for symbol, pos in portfolio.positions.items():
+    print(f"  {symbol}: {pos.size} @ ${pos.avg_entry_price:,.0f} "
+          f"(PnL: ${pos.unrealized_pnl:,.2f})")
+
+# NAV history
+history = client.get_portfolio_history(period="30d", interval="daily")
+for point in history.series:
+    print(f"  {point.timestamp}: NAV=${point.nav:,.2f}")
+
+# Performance metrics
+perf = client.get_performance(period="90d")
+print(f"Sharpe: {perf.sharpe_ratio:.2f}")
+print(f"Max DD: {perf.max_drawdown_pct:.1f}%")
+```
+
+## Subscription & Redemption
+
+```python
+# Subscribe
+sub = client.subscribe(
+    amount_usdt=50000.00,
+    source_wallet="0x1234...abcd",
+    payment_method="usdt_erc20",
+    lock_period_days=90
+)
+print(f"ID: {sub.subscription_id}")
+print(f"Send USDT to: {sub.payment_address}")
+print(f"Deadline: {sub.payment_deadline}")
+
+# Track status
+status = client.get_subscription_status(sub.subscription_id)
+print(f"Status: {status.status}")
+if status.tx_hash:
+    print(f"TX: {status.tx_hash}")
+
+# Redeem
+red = client.redeem(
+    shares=100.0,
+    destination_wallet="0x1234...abcd",
+    redeem_type="standard"
+)
+print(f"Settlement: {red.settlement_date}")
+```
+
+## Risk & Monitoring
+
+```python
+# Risk status
+risk = client.get_risk()
+print(f"DD Level: {risk.drawdown.level}")
+print(f"Circuit Breaker: {'ACTIVE' if risk.circuit_breaker.is_triggered else 'OK'}")
+print(f"VaR (95%): ${risk.var_95:,.0f}")
+
+# Stress test
+stress = client.get_stress_test()
+print(f"Worst case: {stress.summary.worst_case_scenario}")
+print(f"  Impact: ${stress.summary.worst_case_pnl:,.0f}")
+
+# Alerts
+alerts = client.get_alerts()
+for alert in alerts:
+    print(f"[{alert.level}] {alert.message}")
+```
+
+## Webhooks
+
+```python
+# Send custom signal
+result = client.send_signal(
+    source="my_model",
+    direction="long",
+    conviction=0.8,
+    half_life_h=48.0,
+    message="Momentum breakout detected"
+)
+print(f"Signal accepted: {result.signal_id}")
+```
+
+## Error Handling
+
+```python
+from poacapital.exceptions import (
+    AuthError,
+    RateLimitError,
+    InsufficientBalanceError,
+    CircuitBreakerActiveError,
+)
+
+try:
+    client.redeem(shares=9999, destination_wallet="0x...")
+except InsufficientBalanceError as e:
+    print(f"Not enough shares: {e.details}")
+except RateLimitError as e:
+    print(f"Rate limited. Retry after {e.retry_after}s")
+except AuthError as e:
+    print(f"Auth failed: {e.message}")
+```
+
+## Async Support
+
+```python
+from poacapital import AsyncPoAClient
+
+async def main():
+    client = AsyncPoAClient(api_key="...", api_secret="...")
+
+    portfolio = await client.get_portfolio()
+    risk = await client.get_risk()
+
+    await client.close()
+```

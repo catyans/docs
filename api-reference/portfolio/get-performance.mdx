@@ -1,0 +1,64 @@
+---
+title: "Get Performance"
+api: "GET /v1/performance"
+description: "Returns risk-adjusted performance metrics for the specified period"
+---
+
+# Get Performance Metrics
+
+Retrieve comprehensive performance analytics including Sharpe ratio, Sortino ratio, maximum drawdown, win rate, and alpha/beta decomposition.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor`, `viewer`, or `pm` role.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="period" type="string" default="90d">
+  Analysis period. Options: `30d`, `90d`, `180d`, `1y`, `all`
+</ParamField>
+
+## Request
+
+```bash
+curl "https://api.poacapital.io/v1/performance?period=90d" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response Example
+
+```json
+{
+  "period": "90d",
+  "total_return_pct": 12.45,
+  "annualized_return_pct": 49.80,
+  "sharpe_ratio": 2.35,
+  "sortino_ratio": 3.12,
+  "calmar_ratio": 4.56,
+  "max_drawdown_pct": -8.20,
+  "max_drawdown_duration_days": 12,
+  "win_rate": 0.62,
+  "profit_factor": 1.85,
+  "avg_win_pct": 1.20,
+  "avg_loss_pct": -0.75,
+  "volatility_annualized": 0.21,
+  "beta_to_btc": 0.45,
+  "alpha_annualized": 0.28,
+  "total_trades": 156,
+  "avg_holding_period_hours": 36.5
+}
+```
+
+## Metrics Reference
+
+| Metric | Formula | Description |
+| --- | --- | --- |
+| `sharpe_ratio` | (R - Rf) / σ | Risk-adjusted return (annualized) |
+| `sortino_ratio` | (R - Rf) / σ_down | Downside risk-adjusted return |
+| `calmar_ratio` | R_annual / MaxDD | Return per unit of max drawdown |
+| `profit_factor` | Gross Profit / Gross Loss | Profitability ratio |
+| `win_rate` | Winning Trades / Total Trades | Percentage of profitable trades |
+| `beta_to_btc` | Cov(R, R_btc) / Var(R_btc) | Systematic BTC exposure |
+| `alpha_annualized` | R - β × R_btc | Excess return vs BTC buy-and-hold |

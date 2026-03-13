@@ -1,0 +1,126 @@
+---
+title: "TypeScript SDK"
+description: "Official TypeScript/JavaScript SDK for PoA Capital API"
+---
+
+# TypeScript SDK
+
+## Installation
+
+```bash
+npm install @poacapital/sdk
+# or
+yarn add @poacapital/sdk
+```
+
+## Initialization
+
+```typescript
+import { PoAClient } from '@poacapital/sdk';
+
+// API Key auth
+const client = new PoAClient({
+  apiKey: 'pk_live_abc123',
+  apiSecret: 'sk_live_xyz789',
+});
+
+// JWT auth
+const client = await PoAClient.fromCredentials({
+  email: 'investor@example.com',
+  password: 'your_password',
+});
+```
+
+## Portfolio
+
+```typescript
+// Current portfolio
+const portfolio = await client.getPortfolio();
+console.log(`NAV: $${portfolio.nav.toLocaleString()}`);
+console.log(`Leverage: ${portfolio.leverage.toFixed(2)}x`);
+
+for (const [symbol, pos] of Object.entries(portfolio.positions)) {
+  console.log(`  ${symbol}: ${pos.size} BTC, PnL: $${pos.unrealizedPnl}`);
+}
+
+// NAV history
+const history = await client.getPortfolioHistory({
+  period: '30d',
+  interval: 'daily',
+});
+
+// Performance
+const perf = await client.getPerformance({ period: '90d' });
+console.log(`Sharpe: ${perf.sharpeRatio}`);
+```
+
+## Subscription
+
+```typescript
+// Subscribe
+const sub = await client.subscribe({
+  amountUsdt: 50000,
+  sourceWallet: '0x1234...abcd',
+  paymentMethod: 'usdt_erc20',
+  lockPeriodDays: 90,
+});
+console.log(`Send USDT to: ${sub.paymentAddress}`);
+
+// Track status
+const status = await client.getSubscriptionStatus(sub.subscriptionId);
+console.log(`Status: ${status.status}`);
+
+// Redeem
+const red = await client.redeem({
+  shares: 100,
+  destinationWallet: '0x...',
+  redeemType: 'standard',
+});
+```
+
+## Error Handling
+
+```typescript
+import { PoAError, RateLimitError, InsufficientBalanceError } from '@poacapital/sdk';
+
+try {
+  await client.redeem({ shares: 9999, destinationWallet: '0x...' });
+} catch (e) {
+  if (e instanceof InsufficientBalanceError) {
+    console.log(`Available: ${e.details.availableShares}`);
+  } else if (e instanceof RateLimitError) {
+    console.log(`Retry after ${e.retryAfter}s`);
+  }
+}
+```
+
+## Types
+
+```typescript
+interface Portfolio {
+  nav: number;
+  cash: number;
+  leverage: number;
+  drawdown: number;
+  highWaterMark: number;
+  positions: Record<string, Position>;
+  updatedAt: string;
+}
+
+interface Position {
+  size: number;
+  avgEntryPrice: number;
+  markPrice: number;
+  unrealizedPnl: number;
+  direction: 'long' | 'short' | 'flat';
+  weightPct: number;
+}
+
+interface RiskStatus {
+  circuitBreaker: { isTriggered: boolean; lastTriggered: string | null };
+  drawdown: { level: 0 | 1 | 2 | 3; drawdownPct: number; riskMultiplier: number };
+  regime: 'RISK_ON' | 'RISK_OFF' | 'TRANSITIONAL';
+  var95: number;
+  cvar95: number;
+}
+```

@@ -1,0 +1,112 @@
+---
+title: "API Reference"
+description: "Complete reference for all PoA Capital API endpoints"
+---
+
+# API Reference
+
+Base URL: `https://api.poacapital.io/v1`
+
+All requests and responses use JSON format with UTF-8 encoding.
+
+## Endpoint Overview
+
+### Portfolio & Performance
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/portfolio` | Bearer | Current holdings, NAV, P&L |
+| `GET` | `/portfolio/history` | Bearer | Historical NAV time series |
+| `GET` | `/performance` | Bearer | Sharpe, Sortino, max DD, win rate |
+
+### Subscription & Redemption
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `POST` | `/subscription/subscribe` | Bearer | Submit subscription request |
+| `POST` | `/subscription/redeem` | Bearer | Submit redemption request |
+| `GET` | `/subscription/status/{id}` | Bearer | Track subscription/redemption status |
+
+### Risk & Monitoring
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/risk` | Bearer | Risk status, drawdown, circuit breaker |
+| `GET` | `/stress` | — | Run stress test scenarios |
+| `GET` | `/alerts` | — | Recent system alerts |
+| `POST` | `/risk/circuit-breaker/reset` | PM | Reset circuit breaker (emergency) |
+| `POST` | `/risk/drawdown/approve-recovery` | PM | Approve Level 3 recovery |
+
+### On-Chain Records
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/onchain/transactions` | Bearer | On-chain transaction history |
+| `GET` | `/onchain/proof/{tx_hash}` | Bearer | Verify on-chain proof |
+
+### Reports
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/reports/list` | Bearer | List available reports |
+| `GET` | `/reports/download/{id}` | Bearer | Download PDF report |
+
+### Webhooks (External Signals)
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `POST` | `/webhook/signal` | HMAC | Ingest custom trading signal |
+| `POST` | `/webhook/tradingview` | HMAC | Ingest TradingView alert |
+
+### System
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/health` | — | System health check |
+
+## Common Headers
+
+```
+Content-Type: application/json
+Authorization: Bearer <token>
+```
+
+## Pagination
+
+List endpoints support cursor-based pagination:
+
+```
+GET /v1/onchain/transactions?page=1&limit=20
+```
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `page` | integer | 1 | Page number |
+| `limit` | integer | 20 | Items per page (max 100) |
+
+## Response Format
+
+All responses follow a consistent structure:
+
+**Success:**
+```json
+{
+  "data": { ... },
+  "meta": {
+    "request_id": "req_abc123",
+    "timestamp": "2026-03-09T12:00:00Z"
+  }
+}
+```
+
+**Error:**
+```json
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable description",
+    "details": { ... },
+    "request_id": "req_abc123"
+  }
+}
+```

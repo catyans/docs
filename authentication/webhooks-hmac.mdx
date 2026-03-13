@@ -1,0 +1,89 @@
+---
+title: "Webhook HMAC"
+description: "HMAC-SHA256 signature verification for webhook endpoints"
+---
+
+# Webhook Authentication
+
+Webhook endpoints (`/v1/webhook/*`) use **HMAC-SHA256 signature verification** to ensure request integrity and authenticity.
+
+## How It Works
+
+1. You include your webhook secret in the request signature
+2. The server recomputes the signature and compares
+3. Mismatched signatures are rejected with `401 Unauthorized`
+
+## Signature Header
+
+| Header | Description |
+| --- | --- |
+| `X-Signature` | HMAC-SHA256 hex digest of the request body |
+
+## Signing the Request
+
+```python
+import hmac
+import hashlib
+import json
+import requests
+
+WEBHOOK_SECRET = "whsec_your_secret_here"
+
+payload = {
+    "source": "custom_model",
+    "direction": "long",
+    "conviction": 0.75,
+    "half_life_h": 24.0,
+    "horizon": "daily",
+    "message": "Breakout detected"
+}
+
+body = json.dumps(payload, separators=(',', ':'))
+signature = hmac.new(
+    WEBHOOK_SECRET.encode(),
+    body.encode(),
+    hashlib.sha256
+).hexdigest()
+
+resp = requests.post(
+    "https://api.poacapital.io/v1/webhook/signal",
+    headers={
+        "Content-Type": "application/json",
+        "X-Signature": signature,
+    },
+    data=body
+)
+```
+
+## Verification Logic (Server-Side)
+
+```python
+def verify_signature(body: bytes, signature: str, secret: str) -> bool:
+    expected = hmac.new(
+        secret.encode(),
+        body,
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
+```
+
+<Warning>
+  Always use constant-time comparison (`hmac.compare_digest`) to prevent timing attacks.
+</Warning>
+
+## Testing Webhooks
+
+Use the dashboard's webhook tester or send a test request:
+
+```bash
+# Generate signature
+SECRET="whsec_test123"
+BODY='{"source":"test","direction":"long","conviction":0.5,"half_life_h":24,"horizon":"daily","message":"test"}'
+SIG=$(echo -n "$BODY" | openssl dgst -sha256 -hmac "$SECRET" | awk '{print $2}')
+
+# Send webhook
+curl -X POST https://api.poacapital.io/v1/webhook/signal \
+  -H "Content-Type: application/json" \
+  -H "X-Signature: $SIG" \
+  -d "$BODY"
+```

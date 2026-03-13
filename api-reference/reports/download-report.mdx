@@ -1,0 +1,55 @@
+---
+title: "Download Report"
+api: "GET /v1/reports/download/{report_id}"
+description: "Download a specific report as PDF"
+---
+
+# Download Report
+
+Download a specific report in PDF format. Reports include performance metrics, TCA analysis, risk summary, and holdings breakdown.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor`, `viewer`, or `pm` role.
+</ParamField>
+
+## Path Parameters
+
+<ParamField path="report_id" type="string" required>
+  Report identifier (e.g., `rpt_202602_monthly`)
+</ParamField>
+
+## Request
+
+```bash
+curl -O https://api.poacapital.io/v1/reports/download/rpt_202602_monthly \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response
+
+Returns binary PDF content with headers:
+
+```
+Content-Type: application/pdf
+Content-Disposition: attachment; filename="PoA_Monthly_202602.pdf"
+Content-Length: 245000
+```
+
+## Report Contents
+
+### Monthly Report Includes:
+- **Performance KPIs**: NAV, return, Sharpe, Sortino, max DD
+- **Equity Curve**: NAV chart with drawdown overlay
+- **Risk Summary**: Leverage, VaR, drawdown protocol activations
+- **TCA Summary**: Average slippage, implementation shortfall
+- **Holdings**: Position detail at month-end
+- **AI Signal Analysis**: Agent performance attribution
+
+## Errors
+
+| Code | HTTP | Description |
+| --- | --- | --- |
+| `REPORT_NOT_FOUND` | 404 | Report ID does not exist |
+| `REPORT_GENERATING` | 202 | Report is still being generated |

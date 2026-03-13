@@ -1,0 +1,55 @@
+---
+title: "Reset Circuit Breaker"
+api: "POST /v1/risk/circuit-breaker/reset"
+description: "Manually reset the circuit breaker (PM role required)"
+---
+
+# Reset Circuit Breaker
+
+Manually reset the circuit breaker to resume trading after an emergency halt. This action requires Portfolio Manager (`pm`) role authorization.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `pm` role.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="pm_name" type="string" default="PM">
+  Name of the PM performing the reset (for audit log).
+</ParamField>
+
+## Request
+
+```bash
+curl -X POST "https://api.poacapital.io/v1/risk/circuit-breaker/reset?pm_name=John" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response Example
+
+```json
+{
+  "message": "circuit breaker reset by John"
+}
+```
+
+## Response (Not Triggered)
+
+```json
+{
+  "message": "circuit breaker not triggered"
+}
+```
+
+<Warning>
+  This action is logged to the immutable audit trail. The circuit breaker should only be reset after the root cause has been investigated and resolved.
+</Warning>
+
+## Errors
+
+| Code | HTTP | Description |
+| --- | --- | --- |
+| `AUTH_ROLE_REQUIRED` | 403 | Only `pm` role can reset circuit breaker |
+| `SYSTEM_NOT_READY` | 503 | Risk manager not initialized |

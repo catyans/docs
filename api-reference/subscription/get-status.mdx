@@ -1,0 +1,96 @@
+---
+title: "Get Status"
+api: "GET /v1/subscription/status/{id}"
+description: "Track subscription or redemption progress"
+---
+
+# Get Subscription / Redemption Status
+
+Track the progress of a subscription or redemption request through its lifecycle stages.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor` role.
+</ParamField>
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Subscription ID (`sub_*`) or Redemption ID (`red_*`)
+</ParamField>
+
+## Request
+
+```bash
+curl https://api.poacapital.io/v1/subscription/status/sub_20260309_a1b2c3 \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response Example (Subscription)
+
+```json
+{
+  "subscription_id": "sub_20260309_a1b2c3",
+  "type": "subscription",
+  "status": "on_chain",
+  "amount_usdt": 50000.00,
+  "shares_allocated": 237.69,
+  "nav_per_share": 210.35,
+  "payment_method": "usdt_erc20",
+  "tx_hash": "0xabc123def456789012345678901234567890abcdef123456789012345678901234",
+  "block_number": 19234567,
+  "chain": "ethereum",
+  "timestamps": {
+    "created": "2026-03-09T12:00:00Z",
+    "payment_received": "2026-03-09T14:30:00Z",
+    "confirmed": "2026-03-09T15:00:00Z",
+    "on_chain": "2026-03-09T15:05:00Z"
+  }
+}
+```
+
+## Response Example (Redemption)
+
+```json
+{
+  "redemption_id": "red_20260309_d4e5f6",
+  "type": "redemption",
+  "status": "processing",
+  "shares": 100.00,
+  "estimated_amount_usdt": 42100.50,
+  "final_amount_usdt": null,
+  "settlement_date": "2026-03-16T00:00:00Z",
+  "destination_wallet": "0x1234...5678",
+  "tx_hash": null,
+  "timestamps": {
+    "created": "2026-03-09T12:00:00Z",
+    "approved": "2026-03-10T09:00:00Z",
+    "processing": "2026-03-10T09:05:00Z"
+  }
+}
+```
+
+## Status Values
+
+### Subscription Statuses
+
+| Status | Description |
+| --- | --- |
+| `pending_payment` | Awaiting USDT transfer to payment address |
+| `payment_received` | Payment detected on-chain |
+| `confirmed` | AML/KYC checks passed |
+| `on_chain` | Share allocation recorded on-chain |
+| `active` | Shares active in portfolio |
+| `rejected` | Failed AML/KYC or payment timeout |
+
+### Redemption Statuses
+
+| Status | Description |
+| --- | --- |
+| `pending_review` | Awaiting PM review |
+| `approved` | Approved, awaiting settlement date |
+| `processing` | Settlement in progress |
+| `settled` | USDT sent to destination wallet |
+| `completed` | On-chain confirmation received |
+| `rejected` | Rejected (lock period, liquidity, etc.) |

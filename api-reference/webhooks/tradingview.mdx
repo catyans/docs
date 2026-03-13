@@ -1,0 +1,74 @@
+---
+title: "TradingView Webhook"
+api: "POST /v1/webhook/tradingview"
+description: "Ingest TradingView alert signals"
+---
+
+# TradingView Webhook
+
+Receive alerts directly from TradingView. Configure your TradingView alert to POST to this endpoint.
+
+## Authentication
+
+HMAC-SHA256 signature via `X-Signature` header.
+
+## Request Body
+
+<ParamField body="ticker" type="string" default="BTCUSDT">
+  Trading pair ticker
+</ParamField>
+
+<ParamField body="action" type="string" required>
+  Alert action: `"buy"` or `"sell"`
+</ParamField>
+
+<ParamField body="price" type="number" default="0.0">
+  Price at time of alert
+</ParamField>
+
+<ParamField body="message" type="string">
+  Alert message text
+</ParamField>
+
+## TradingView Alert Setup
+
+In TradingView, create an alert with:
+
+- **Webhook URL**: `https://api.poacapital.io/v1/webhook/tradingview`
+- **Message format**:
+
+```json
+{
+  "ticker": "{{ticker}}",
+  "action": "{{strategy.order.action}}",
+  "price": {{close}},
+  "message": "{{strategy.order.comment}}"
+}
+```
+
+## Request
+
+```bash
+curl -X POST https://api.poacapital.io/v1/webhook/tradingview \
+  -H "Content-Type: application/json" \
+  -H "X-Signature: a1b2c3d4e5f6..." \
+  -d '{
+    "ticker": "BTCUSDT",
+    "action": "buy",
+    "price": 68200.00,
+    "message": "EMA 21/55 bullish crossover"
+  }'
+```
+
+## Response Example
+
+```json
+{
+  "status": "accepted",
+  "signal_id": "sig_tv_e5f6g7h8"
+}
+```
+
+<Note>
+  TradingView signals are ingested with a default conviction of 0.5 and 24h half-life. For more control over signal parameters, use the [Signal Webhook](/api-reference/webhooks/signal) endpoint.
+</Note>

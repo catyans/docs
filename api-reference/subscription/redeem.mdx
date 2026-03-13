@@ -1,0 +1,77 @@
+---
+title: "Redeem"
+api: "POST /v1/subscription/redeem"
+description: "Submit a redemption request to withdraw capital"
+---
+
+# Redeem
+
+Submit a redemption request to convert fund shares back to USDT. Standard redemptions settle in T+7 days.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor` role.
+</ParamField>
+
+## Request Body
+
+<ParamField body="shares" type="number" required>
+  Number of shares to redeem.
+</ParamField>
+
+<ParamField body="destination_wallet" type="string" required>
+  Wallet address to receive USDT.
+</ParamField>
+
+<ParamField body="redeem_type" type="string" default="standard">
+  Redemption speed. Options: `standard` (T+7), `express` (T+1, max $10k)
+</ParamField>
+
+<ParamField body="destination_chain" type="string" default="ethereum">
+  Target chain. Options: `ethereum`, `arbitrum`, `tron`
+</ParamField>
+
+## Request
+
+```bash
+curl -X POST https://api.poacapital.io/v1/subscription/redeem \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "shares": 100.00,
+    "destination_wallet": "0x1234567890abcdef1234567890abcdef12345678",
+    "redeem_type": "standard",
+    "destination_chain": "ethereum"
+  }'
+```
+
+## Response Example
+
+```json
+{
+  "redemption_id": "red_20260309_d4e5f6",
+  "status": "pending_review",
+  "shares": 100.00,
+  "estimated_amount_usdt": 42100.50,
+  "nav_at_request": 210350.50,
+  "nav_per_share": 421.005,
+  "settlement_date": "2026-03-16T00:00:00Z",
+  "destination_wallet": "0x1234...5678",
+  "destination_chain": "ethereum",
+  "created_at": "2026-03-09T12:00:00Z"
+}
+```
+
+<Note>
+  The final redemption amount is calculated at the NAV on settlement date, not the request date. `estimated_amount_usdt` is indicative only.
+</Note>
+
+## Errors
+
+| Code | HTTP | Description |
+| --- | --- | --- |
+| `INSUFFICIENT_BALANCE` | 422 | Requested shares exceed available balance |
+| `SUB_LOCK_PERIOD` | 422 | Shares still in lock-up period |
+| `REDEEM_MAX_EXCEEDED` | 422 | Exceeds 25% of fund NAV per redemption |
+| `REDEEM_EXPRESS_LIMIT` | 422 | Express redemption exceeds $10,000 limit |

@@ -1,0 +1,54 @@
+---
+title: "SDK Overview"
+description: "Official Python and TypeScript SDKs for the PoA Capital API"
+---
+
+# SDK Overview
+
+PoA Capital provides official SDKs for **Python** and **TypeScript** to simplify API integration.
+
+<CardGroup cols={2}>
+  <Card title="Python SDK" icon="python" href="/sdk/python">
+    `pip install poacapital`
+  </Card>
+  <Card title="TypeScript SDK" icon="js" href="/sdk/typescript">
+    `npm install @poacapital/sdk`
+  </Card>
+</CardGroup>
+
+## Feature Comparison
+
+| Feature | Python | TypeScript |
+| --- | --- | --- |
+| Portfolio queries | Yes | Yes |
+| Subscription / Redemption | Yes | Yes |
+| Risk monitoring | Yes | Yes |
+| Webhook signal sending | Yes | Yes |
+| Report download | Yes | Yes |
+| WebSocket streaming | Yes | Yes |
+| Auto token refresh | Yes | Yes |
+| Type safety | Pydantic models | Full TypeScript types |
+
+## Quick Example
+
+```python
+from poacapital import PoAClient
+
+client = PoAClient(api_key="pk_live_...", api_secret="sk_live_...")
+
+# Portfolio
+portfolio = client.get_portfolio()
+print(f"NAV: ${portfolio.nav:,.2f}")
+
+# Performance
+perf = client.get_performance(period="90d")
+print(f"Sharpe: {perf.sharpe_ratio:.2f}")
+
+# Subscribe
+sub = client.subscribe(
+    amount_usdt=50000,
+    source_wallet="0x...",
+    payment_method="usdt_erc20"
+)
+print(f"Send USDT to: {sub.payment_address}")
+```

@@ -1,0 +1,71 @@
+---
+title: "Get Risk Status"
+api: "GET /v1/risk"
+description: "Returns current risk management status including drawdown level, circuit breaker, and VaR"
+---
+
+# Get Risk Status
+
+Retrieve the current state of the 4-layer risk management system, including drawdown protocol level, circuit breaker status, and value-at-risk metrics.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `viewer` or `pm` role.
+</ParamField>
+
+## Request
+
+```bash
+curl https://api.poacapital.io/v1/risk \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response Example
+
+```json
+{
+  "circuit_breaker": {
+    "is_triggered": false,
+    "trigger_count_24h": 0,
+    "last_triggered": null,
+    "last_reset_by": null
+  },
+  "drawdown": {
+    "level": 0,
+    "drawdown_pct": -0.0234,
+    "risk_multiplier": 1.0,
+    "recovery_approved": false
+  },
+  "regime": "RISK_ON",
+  "daily_loss": -120.50,
+  "daily_loss_limit": -6000.00,
+  "var_95": -4200.00,
+  "cvar_95": -6100.00,
+  "current_leverage": 1.25,
+  "max_leverage": 2.0,
+  "margin_usage_pct": 42.5,
+  "active_risk_events": []
+}
+```
+
+## Drawdown Protocol Levels
+
+| Level | Trigger | Risk Multiplier | Action |
+| --- | --- | --- | --- |
+| **0** | DD > -5% | 1.00 | Normal operations |
+| **1** | DD ≤ -5% | 0.75 | Position sizes reduced 25% |
+| **2** | DD ≤ -10% | 0.50 | Reduced 50%, short-vol disabled |
+| **3** | DD ≤ -15% | 0.00 | All positions flattened, PM approval required |
+
+## Circuit Breaker Triggers
+
+The circuit breaker halts all trading when any of these conditions are met:
+
+- Drawdown exceeds **-15%**
+- More than **5 consecutive** API errors
+- Price moves **>10%** in a single 1-minute candle
+
+<Warning>
+  When the circuit breaker is active, all order submission is blocked. Only a PM can reset it via `POST /risk/circuit-breaker/reset`.
+</Warning>

@@ -1,0 +1,56 @@
+---
+title: "List Reports"
+api: "GET /v1/reports/list"
+description: "List available performance and investor reports"
+---
+
+# List Reports
+
+Retrieve a list of available reports for download.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor`, `viewer`, or `pm` role.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="type" type="string" default="all">
+  Report type filter: `daily`, `weekly`, `monthly`, `all`
+</ParamField>
+
+## Request
+
+```bash
+curl "https://api.poacapital.io/v1/reports/list?type=monthly" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response Example
+
+```json
+{
+  "reports": [
+    {
+      "report_id": "rpt_202602_monthly",
+      "type": "monthly",
+      "period": "2026-02",
+      "title": "February 2026 Monthly Report",
+      "generated_at": "2026-03-01T06:00:00Z",
+      "size_bytes": 245000,
+      "format": "pdf"
+    },
+    {
+      "report_id": "rpt_202601_monthly",
+      "type": "monthly",
+      "period": "2026-01",
+      "title": "January 2026 Monthly Report",
+      "generated_at": "2026-02-01T06:00:00Z",
+      "size_bytes": 238000,
+      "format": "pdf"
+    }
+  ],
+  "total": 2
+}
+```

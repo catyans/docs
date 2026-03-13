@@ -1,0 +1,73 @@
+---
+title: "Get Transactions"
+api: "GET /v1/onchain/transactions"
+description: "Returns on-chain transaction history for the investor"
+---
+
+# Get On-Chain Transactions
+
+Retrieve the investor's on-chain transaction records, including subscriptions, redemptions, and share minting/burning events.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor` role.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="page" type="integer" default="1">
+  Page number
+</ParamField>
+
+<ParamField query="limit" type="integer" default="20">
+  Items per page (max 100)
+</ParamField>
+
+<ParamField query="type" type="string">
+  Filter by type: `subscription`, `redemption`, `all`
+</ParamField>
+
+## Request
+
+```bash
+curl "https://api.poacapital.io/v1/onchain/transactions?page=1&limit=20" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response Example
+
+```json
+{
+  "transactions": [
+    {
+      "tx_hash": "0xabc123def456789012345678901234567890abcdef1234567890123456789abcde",
+      "type": "subscription",
+      "amount_usdt": 50000.00,
+      "shares": 237.69,
+      "nav_per_share": 210.35,
+      "chain": "ethereum",
+      "block_number": 19234567,
+      "status": "confirmed",
+      "timestamp": "2026-03-09T15:05:00Z"
+    },
+    {
+      "tx_hash": "0xdef789abc012345678901234567890abcdef123456789012345678901234567890",
+      "type": "redemption",
+      "amount_usdt": 21050.25,
+      "shares": 100.00,
+      "nav_per_share": 210.50,
+      "chain": "ethereum",
+      "block_number": 19240123,
+      "status": "confirmed",
+      "timestamp": "2026-03-16T00:05:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 5,
+    "total_pages": 1
+  }
+}
+```

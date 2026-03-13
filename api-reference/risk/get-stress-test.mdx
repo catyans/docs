@@ -1,0 +1,117 @@
+---
+title: "Get Stress Test"
+api: "GET /v1/stress"
+description: "Run stress test scenarios against the current portfolio"
+---
+
+# Run Stress Test
+
+Execute 9 stress test scenarios (5 historical + 4 hypothetical) against the current portfolio and return projected P&L impacts.
+
+## Authentication
+
+No authentication required. This is a public endpoint.
+
+## Request
+
+```bash
+curl https://api.poacapital.io/v1/stress
+```
+
+## Response Example
+
+```json
+{
+  "summary": {
+    "worst_case_pnl": -42000.00,
+    "worst_case_pct": -20.0,
+    "worst_case_scenario": "Black Swan -40%",
+    "scenarios_breaching_cb": 2,
+    "total_scenarios": 9,
+    "portfolio_nav": 210350.50
+  },
+  "scenarios": [
+    {
+      "name": "COVID-19 Crash (Mar 2020)",
+      "type": "historical",
+      "btc_shock_pct": -37.0,
+      "pnl_impact": -35000.00,
+      "pnl_impact_pct": -16.6,
+      "nav_after": 175350.50,
+      "breaches_cb": true
+    },
+    {
+      "name": "LUNA Collapse (May 2022)",
+      "type": "historical",
+      "btc_shock_pct": -32.0,
+      "pnl_impact": -28000.00,
+      "pnl_impact_pct": -13.3,
+      "nav_after": 182350.50,
+      "breaches_cb": false
+    },
+    {
+      "name": "FTX Bankruptcy (Nov 2022)",
+      "type": "historical",
+      "btc_shock_pct": -27.0,
+      "pnl_impact": -22000.00,
+      "pnl_impact_pct": -10.5,
+      "nav_after": 188350.50,
+      "breaches_cb": false
+    },
+    {
+      "name": "China Ban (Jun 2021)",
+      "type": "historical",
+      "btc_shock_pct": -30.0,
+      "pnl_impact": -25000.00,
+      "pnl_impact_pct": -11.9,
+      "nav_after": 185350.50,
+      "breaches_cb": false
+    },
+    {
+      "name": "March 2020 Flash Crash",
+      "type": "historical",
+      "btc_shock_pct": -50.0,
+      "pnl_impact": -40000.00,
+      "pnl_impact_pct": -19.0,
+      "nav_after": 170350.50,
+      "breaches_cb": true
+    },
+    {
+      "name": "Black Swan -40%",
+      "type": "hypothetical",
+      "btc_shock_pct": -40.0,
+      "pnl_impact": -42000.00,
+      "pnl_impact_pct": -20.0,
+      "nav_after": 168350.50,
+      "breaches_cb": true
+    },
+    {
+      "name": "Vol Explosion 3x",
+      "type": "hypothetical",
+      "btc_shock_pct": -15.0,
+      "pnl_impact": -12000.00,
+      "pnl_impact_pct": -5.7,
+      "nav_after": 198350.50,
+      "breaches_cb": false
+    },
+    {
+      "name": "Liquidity Crisis",
+      "type": "hypothetical",
+      "btc_shock_pct": -20.0,
+      "pnl_impact": -18000.00,
+      "pnl_impact_pct": -8.6,
+      "nav_after": 192350.50,
+      "breaches_cb": false
+    },
+    {
+      "name": "Correlation Breakdown",
+      "type": "hypothetical",
+      "btc_shock_pct": -25.0,
+      "pnl_impact": -20000.00,
+      "pnl_impact_pct": -9.5,
+      "nav_after": 190350.50,
+      "breaches_cb": false
+    }
+  ]
+}
+```

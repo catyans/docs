@@ -1,0 +1,128 @@
+---
+title: "Quick Start"
+description: "Get up and running with the PoA Capital API in 5 minutes"
+---
+
+# Quick Start
+
+This guide walks you through making your first API call to PoA Capital.
+
+## Prerequisites
+
+- An active PoA Capital investor account
+- API credentials (API Key or JWT token)
+
+## Step 1: Get Your API Key
+
+Navigate to [Dashboard → Settings → API Keys](https://app.poacapital.io/settings/api-keys) to generate your credentials.
+
+<Note>
+  Store your API secret securely. It is only shown once during creation.
+</Note>
+
+## Step 2: Authenticate
+
+```bash
+# Get a JWT token
+curl -X POST https://api.poacapital.io/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "your@email.com",
+    "password": "your_password"
+  }'
+```
+
+Response:
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIs...",
+  "token_type": "bearer",
+  "expires_in": 86400,
+  "role": "investor"
+}
+```
+
+## Step 3: Query Your Portfolio
+
+```bash
+curl https://api.poacapital.io/v1/portfolio \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+Response:
+
+```json
+{
+  "nav": 210350.50,
+  "cash": 45200.00,
+  "leverage": 1.25,
+  "drawdown": -0.0234,
+  "positions": {
+    "BTC/USDT": {
+      "size": 2.35,
+      "avg_entry_price": 67500.00,
+      "mark_price": 68200.00,
+      "unrealized_pnl": 1645.00,
+      "direction": "long"
+    }
+  },
+  "updated_at": "2026-03-09T12:00:00Z"
+}
+```
+
+## Step 4: Check Risk Status
+
+```bash
+curl https://api.poacapital.io/v1/risk \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+Response:
+
+```json
+{
+  "circuit_breaker": { "is_triggered": false },
+  "drawdown_level": 0,
+  "drawdown_pct": -0.0234,
+  "risk_multiplier": 1.0,
+  "regime": "RISK_ON"
+}
+```
+
+## Using the Python SDK
+
+```python
+from poacapital import PoAClient
+
+client = PoAClient(
+    api_key="your_api_key",
+    api_secret="your_api_secret"
+)
+
+# Get portfolio
+portfolio = client.get_portfolio()
+print(f"NAV: ${portfolio.nav:,.2f}")
+print(f"Drawdown: {portfolio.drawdown:.2%}")
+
+# Get performance
+perf = client.get_performance(period="90d")
+print(f"Sharpe: {perf.sharpe_ratio:.2f}")
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="lock" href="/authentication/api-keys">
+    Learn about API Key and JWT authentication
+  </Card>
+  <Card title="Subscribe" icon="circle-dollar-to-slot" href="/api-reference/subscription/overview">
+    Make your first subscription
+  </Card>
+  <Card title="Portfolio API" icon="chart-pie" href="/api-reference/portfolio/get-portfolio">
+    Full portfolio endpoint reference
+  </Card>
+  <Card title="Error Handling" icon="triangle-exclamation" href="/resources/error-codes">
+    Handle errors gracefully
+  </Card>
+</CardGroup>

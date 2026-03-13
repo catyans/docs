@@ -1,0 +1,76 @@
+---
+title: "Get NAV History"
+api: "GET /v1/portfolio/history"
+description: "Returns historical NAV time series for charting and analysis"
+---
+
+# Get NAV History
+
+Retrieve historical NAV snapshots for the fund. Useful for building equity curves, drawdown charts, and performance dashboards.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor`, `viewer`, or `pm` role.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="period" type="string" default="30d">
+  Lookback period. Options: `7d`, `30d`, `90d`, `1y`, `all`
+</ParamField>
+
+<ParamField query="interval" type="string" default="daily">
+  Data granularity. Options: `hourly`, `daily`, `weekly`
+</ParamField>
+
+## Request
+
+```bash
+curl "https://api.poacapital.io/v1/portfolio/history?period=30d&interval=daily" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+## Response Example
+
+```json
+{
+  "series": [
+    {
+      "timestamp": "2026-02-07T00:00:00Z",
+      "nav": 200000.00,
+      "daily_pnl": 0.00,
+      "drawdown": 0.0,
+      "leverage": 0.00
+    },
+    {
+      "timestamp": "2026-02-08T00:00:00Z",
+      "nav": 200850.00,
+      "daily_pnl": 850.00,
+      "drawdown": 0.0,
+      "leverage": 0.85
+    },
+    {
+      "timestamp": "2026-03-09T00:00:00Z",
+      "nav": 210350.50,
+      "daily_pnl": 550.50,
+      "drawdown": -0.0234,
+      "leverage": 1.25
+    }
+  ],
+  "period": "30d",
+  "interval": "daily",
+  "total_return_pct": 5.18,
+  "data_points": 31
+}
+```
+
+## Series Fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `timestamp` | string | ISO 8601 snapshot time |
+| `nav` | number | Net Asset Value at snapshot |
+| `daily_pnl` | number | Day-over-day P&L in USDT |
+| `drawdown` | number | Drawdown from HWM (negative) |
+| `leverage` | number | Portfolio leverage at snapshot |

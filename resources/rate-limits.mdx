@@ -1,0 +1,72 @@
+---
+title: "Rate Limits"
+description: "API rate limiting policies and best practices"
+---
+
+# Rate Limits
+
+All API endpoints are rate-limited to ensure fair usage and system stability.
+
+## Limits by Endpoint
+
+| Endpoint Category | Limit | Window | Scope |
+| --- | --- | --- | --- |
+| `POST /auth/*` | 10 requests | per minute | per IP |
+| `GET /health` | 60 requests | per minute | per IP |
+| `GET /portfolio`, `/risk`, `/performance` | 30 requests | per minute | per API key |
+| `GET /portfolio/history`, `/reports/*` | 10 requests | per minute | per API key |
+| `GET /onchain/*` | 20 requests | per minute | per API key |
+| `POST /subscription/*` | 5 requests | per minute | per API key |
+| `POST /webhook/*` | 120 requests | per minute | per API key |
+| `GET /stress` | 5 requests | per minute | per IP |
+
+## Response Headers
+
+Every response includes rate limit information:
+
+```
+X-RateLimit-Limit: 30
+X-RateLimit-Remaining: 27
+X-RateLimit-Reset: 1709942460
+```
+
+| Header | Description |
+| --- | --- |
+| `X-RateLimit-Limit` | Max requests allowed in window |
+| `X-RateLimit-Remaining` | Requests remaining in current window |
+| `X-RateLimit-Reset` | Unix timestamp when window resets |
+
+## When Rate Limited
+
+HTTP `429 Too Many Requests`:
+
+```json
+{
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Rate limit exceeded. Retry after 32 seconds.",
+    "details": {
+      "limit": 30,
+      "window": "1m",
+      "retry_after": 32
+    }
+  }
+}
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Cache responses">
+    Portfolio and risk data update every ~60 seconds. Avoid polling more frequently than your data changes.
+  </Accordion>
+  <Accordion title="Use exponential backoff">
+    On 429 errors, wait `retry_after` seconds, then use exponential backoff (2s, 4s, 8s...) for subsequent retries.
+  </Accordion>
+  <Accordion title="Batch where possible">
+    Use `/portfolio` (which includes positions) instead of making separate calls for each position.
+  </Accordion>
+  <Accordion title="Use WebSocket for real-time">
+    For live NAV/price updates, use the WebSocket stream instead of polling REST endpoints.
+  </Accordion>
+</AccordionGroup>

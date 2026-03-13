@@ -1,0 +1,87 @@
+---
+title: "Subscribe"
+api: "POST /v1/subscription/subscribe"
+description: "Submit a new subscription (capital injection) request"
+---
+
+# Subscribe
+
+Submit a new capital subscription request. The system returns a payment address for the investor to send USDT. Once payment is detected on-chain, the subscription is confirmed and shares are allocated.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Requires `investor` role.
+</ParamField>
+
+## Request Body
+
+<ParamField body="amount_usdt" type="number" required>
+  Subscription amount in USDT. Minimum: 10,000.
+</ParamField>
+
+<ParamField body="source_wallet" type="string" required>
+  Investor's source wallet address (for AML verification).
+</ParamField>
+
+<ParamField body="payment_method" type="string" required>
+  Payment chain/token. Options: `usdt_erc20`, `usdt_trc20`, `usdt_arb`, `usdc_erc20`
+</ParamField>
+
+<ParamField body="lock_period_days" type="integer" default="90">
+  Lock-up period in days. Options: `0`, `30`, `90`, `180`, `365`
+</ParamField>
+
+## Request
+
+```bash
+curl -X POST https://api.poacapital.io/v1/subscription/subscribe \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount_usdt": 50000.00,
+    "source_wallet": "0x1234567890abcdef1234567890abcdef12345678",
+    "payment_method": "usdt_erc20",
+    "lock_period_days": 90
+  }'
+```
+
+## Response Example
+
+```json
+{
+  "subscription_id": "sub_20260309_a1b2c3",
+  "status": "pending_payment",
+  "amount_usdt": 50000.00,
+  "nav_at_subscription": 210350.50,
+  "shares_estimated": 237.69,
+  "payment_address": "0xPoAFund...DepositAddr",
+  "payment_chain": "ethereum",
+  "payment_deadline": "2026-03-10T12:00:00Z",
+  "lock_until": "2026-06-07T12:00:00Z",
+  "created_at": "2026-03-09T12:00:00Z"
+}
+```
+
+## Response Fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `subscription_id` | string | Unique subscription identifier |
+| `status` | string | Current status (see lifecycle) |
+| `shares_estimated` | number | Estimated shares at current NAV |
+| `payment_address` | string | Fund deposit address (unique per subscription) |
+| `payment_deadline` | string | Payment must arrive before this time |
+| `lock_until` | string | Earliest redemption date |
+
+## Errors
+
+| Code | HTTP | Description |
+| --- | --- | --- |
+| `SUB_MIN_AMOUNT` | 422 | Amount below $10,000 minimum |
+| `SUB_DUPLICATE` | 409 | Active subscription already pending |
+| `AUTH_KYC_REQUIRED` | 403 | KYC not yet approved |
+
+<Warning>
+  Each subscription generates a **unique deposit address**. Do NOT reuse addresses from previous subscriptions.
+</Warning>
