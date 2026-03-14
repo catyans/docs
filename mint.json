@@ -128,7 +128,6 @@
     {
       "group": "Resources",
       "pages": [
-        "resources/strategy-onepager",
         "resources/error-codes",
         "resources/rate-limits",
         "resources/changelog"

@@ -35,6 +35,54 @@ The platform is designed for:
 - **B2C Wealth Platforms** — Product distribution, portfolio visibility, and downstream tooling
 - **Internal Trading & Research Teams** — Strategy operations, monitoring, and execution support
 
+## Strategy Overview
+
+VINE's trading and allocation stack is built around **BTC and ETH** as core assets, combining multiple low-correlation alpha sources under a single institutional workflow.
+
+### Investment Principles
+
+- **Single asset universe, multiple alpha dimensions** — Concentrated exposure to BTC and ETH, but diversified through distinct research and signal layers rather than superficial product packaging.
+- **AI-native decision making** — AI agents participate directly in news interpretation, event classification, and signal generation.
+- **Execution as alpha** — Slippage, market impact, and implementation shortfall are treated as part of the research feedback loop.
+- **Tail-risk first** — The system prioritizes worst-case scenario quantification and drawdown control before return optimization.
+
+### Strategy Modules
+
+| Module | Core Logic |
+| --- | --- |
+| **News / Event Guard** | Uses LLMs to classify regulatory, security, ETF, and macro events, then calibrates impact decay using historical analogs. |
+| **Macro Regime** | Uses rates, DXY, yield curve, VIX, and macro calendar events to classify `Risk-On`, `Transitional`, and `Risk-Off` environments. |
+| **Vol Agent** | Targets IV-RV mean reversion, term-structure dislocations, and volatility regime opportunities derived from Deribit data. |
+
+<Note>
+  `Vol Agent` is planned for Phase 2. Phase 1 focuses on the `News + Macro` stack, with strategy weights evolving through backtests and live trading evidence.
+</Note>
+
+### Signal Construction
+
+Signals are combined through **conviction weighting** and **time decay** before being translated into a target position.
+
+```text
+target_position = f(agent_weight, conviction, direction, decay_factor, regime_overlay)
+```
+
+### Portfolio Construction And Execution
+
+- **Fractional Kelly** — Uses a conservative Kelly framework to balance capital growth with drawdown control.
+- **Vol Targeting** — Dynamically adjusts position sizing toward a target volatility range.
+- **Risk Budgeting** — Allocates risk using marginal contribution rather than simple notional sizing.
+- **PMS → OMS → EMS separation** — Keeps portfolio logic, order logic, and execution logic cleanly separated.
+- **TCA feedback loop** — Feeds implementation shortfall and execution quality back into signal thresholds and execution parameters.
+
+### Risk Framework
+
+| Layer | Scope |
+| --- | --- |
+| **L1 Agent Layer** | Per-trade stop limits, daily loss caps, low-conviction filtering, and volatility targeting constraints. |
+| **L2 Supervisor Layer** | Factor overlap controls, EVT tail-risk monitoring, staged drawdown protocol, and cross-strategy correlation monitoring. |
+| **L3 Hard Limits** | Max leverage, exchange exposure caps, margin utilization ceilings, and non-overridable trading limits. |
+| **L4 Circuit Breaker** | Full de-risking under extreme drawdowns or system failures, with manual approval required for restart. |
+
 ## Key Features
 
 | Capability | Details |
